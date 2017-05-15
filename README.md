@@ -24,3 +24,6 @@ FFmpegGUI is an open-source video filter graph editor based on **Qt** and **FFmp
 - ./configure
 - make
 
+## How it looks: 
+
+![image](https://{https://cloud.githubusercontent.com/assets/28718008/26083055/bad1bb3a-39d3-11e7-9924-ec5c3ab04481.png})

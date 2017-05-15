@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RCC version="1.0">
+    <qresource>
+        <file alias="buble.png">icons/buble.png</file>
+        <file alias="clear.png">icons/clear.png</file>
+        <file alias="cursor.png">icons/cursor.png</file>
+        <file alias="cursorT.png">icons/cursorT.png</file>
+        <file alias="exit.png">icons/exit.png</file>
+        <file alias="file.png">icons/file.png</file>
+        <file alias="filt1S.svg">icons/filt1S.svg</file>
+        <file alias="filt1.svg">icons/filt1.svg</file>
+        <file alias="hand.png">icons/hand.png</file>
+        <file alias="handT.png">icons/handT.png</file>
+        <file alias="help.png">icons/help.png</file>
+        <file alias="checked.png">icons/checked.png</file>
+        <file alias="automatic.png">icons/automatic.png</file>
+        <file alias="pad1.svg">icons/pad1.svg</file> 
+        <file alias="padC.svg">icons/padC.svg</file> 
+        <file alias="play.png">icons/play.png</file> 
+        <file alias="remove.png">icons/remove.png</file> 
+        <file alias="save.png">icons/save.png</file> 
+        <file alias="savetext.png">icons/savetext.png</file> 
+        <file alias="text.png">icons/text.png</file> 
+        <file alias="unicorn.png">./icons/unicorn.png</file> 
+        <file alias="wire.png">icons/wire.png</file> 
+        <file alias="xml.png">icons/xml.png</file> 
+    </qresource>
+</RCC>

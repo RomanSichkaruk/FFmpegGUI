@@ -1,0 +1,9 @@
+#!/bin/bash
+qmake -project -Wnone
+echo "QT += gui core widgets" >> *.pro
+echo "TARGET = FFmpegGUI"  >> *.pro
+echo "CONFIG += c++11" >> *.pro
+echo "QMAKE_CLAGS += -D__STDC_FORMAT_MACROS -D__STDC_CONSTANT_MACROS" >> *.pro
+echo "QMAKE_CXXFLAGS+= -fpermissive -std=c++0x" >> *.pro
+echo "LIBS+=-L`ldconfig -p | grep libavformat | grep -o -P '(?<==>).*(?=/libavformat)' | sed -n 1p | xargs`  -lavdevice -lavformat -lavfilter -lavcodec -lswscale -lavutil -lswresample -lbz2 -lm -lz -ldl" >> *.pro
+qmake

@@ -35,6 +35,10 @@
 #include <QPushButton>
 #include <QPixmap>
 
+/**
+ * Constructor
+ */
+
 FiltersList::FiltersList() {
     ui.setupUi(this);
     
@@ -47,12 +51,28 @@ FiltersList::FiltersList() {
     connect(ui.lineEdit, SIGNAL(textChanged(QString)), 
             (FiltersList*)this, SLOT(changedEdit(QString)));
 }
+//------------------------------------------------------------------------------
+
+/**
+ * Copy constructor
+ */
 
 FiltersList::FiltersList(const FiltersList& orig) {
 }
+//------------------------------------------------------------------------------
+
+/**
+ * Destructor
+ */
 
 FiltersList::~FiltersList() {
 }
+//------------------------------------------------------------------------------
+
+/**
+ * Slot, called when user changes widget location.
+ * @param area
+ */
 
 void FiltersList::changedLocation(Qt::DockWidgetArea area){
     if(area==Qt::LeftDockWidgetArea || area==Qt::RightDockWidgetArea){
@@ -64,6 +84,13 @@ void FiltersList::changedLocation(Qt::DockWidgetArea area){
         toHorizontalChange();
     }
 }
+//------------------------------------------------------------------------------
+
+/**
+ * Slot, called when user edites field with searched filters.
+ * @param text text written by user
+ */
+
 void FiltersList::changedEdit(QString text){
     for(int i = 0; i < ui.tableWidget->rowCount(); i++){
         QString txt(((QPushButton*) 
@@ -76,6 +103,11 @@ void FiltersList::changedEdit(QString text){
     
     ui.tableWidget->resizeColumnsToContents();
 }
+//------------------------------------------------------------------------------
+
+/**
+ * Slot, called when filters need to be aligned in a row.
+ */
 
 void FiltersList::toHorizontalChange(){
     
@@ -99,6 +131,11 @@ void FiltersList::toHorizontalChange(){
     ui.tableWidget->setMaximumHeight(88);
     ui.tableWidget->setMaximumWidth(5000);
 }
+//------------------------------------------------------------------------------
+
+/**
+ * Slot, called when filters need to be aligned in a col.
+ */
 
 void FiltersList::toVerticalChange(){
     
@@ -122,3 +159,4 @@ void FiltersList::toVerticalChange(){
     ui.tableWidget->setMaximumWidth(247);
     ui.tableWidget->setMaximumHeight(5000);
 }
+//------------------------------------------------------------------------------

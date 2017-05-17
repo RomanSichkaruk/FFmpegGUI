@@ -30,6 +30,10 @@
 #include <QPushButton>
 #include <QComboBox>
 
+/**
+ * Constructors and destructor
+ */
+
 FilterParamsList::FilterParamsList() {
     ui.setupUi(this);
     ui.tableWidget->horizontalHeader()->setStretchLastSection(true);
@@ -42,6 +46,13 @@ FilterParamsList::FilterParamsList(const FilterParamsList& orig) {
 
 FilterParamsList::~FilterParamsList() {
 }
+//------------------------------------------------------------------------------
+
+/**
+ * This function takes filter parameters and creates 
+ * corresponding cells in table widget. 
+ * @param f filter which parameters are represented
+ */
 
 void FilterParamsList::initializeWidget(Filter* f){
     
@@ -84,6 +95,15 @@ void FilterParamsList::initializeWidget(Filter* f){
     connect(ui.tableWidget, SIGNAL(cellClicked(int, int)), (FilterParamsList*)this,
             SLOT(changeDescription(int, int)));
 }
+//------------------------------------------------------------------------------
+
+/**
+ *  Creates QComboBox object and places it 
+ *  as a cell widget.
+ *  @param k - filter parameter of a cell
+ *  @param r - row to place combo box
+ *  @param c - col to place combo box
+ */
 
 void FilterParamsList::createComboBox(FilterParameter * k, int r,int c){
     QComboBox * item3 = new QComboBox;
@@ -102,6 +122,15 @@ void FilterParamsList::createComboBox(FilterParameter * k, int r,int c){
 
     ui.tableWidget->setCellWidget(r,c,item3);
 }
+//------------------------------------------------------------------------------
+
+/**
+ *  Creates QLineEdit object and places it 
+ *  as a cell widget.
+ *  @param k - filter parameter of a cell
+ *  @param r - row to place line edit
+ *  @param c - col to place line edit
+ */
 
 void FilterParamsList::createLineEdit(FilterParameter * k, int r,int c){
     QLineEdit * item2 = new QLineEdit;
@@ -126,20 +155,47 @@ void FilterParamsList::createLineEdit(FilterParameter * k, int r,int c){
         item2->setValidator(new QIntValidator((int) k->min, (int) k->max, this));
     ui.tableWidget->setCellWidget(r,c,item2);
 }
+//------------------------------------------------------------------------------
+
+/**
+ * Slot, called when user changes value of a parameter in table widget.
+ * Cell with value is QLineEdit instance.
+ * @param text
+ */
 
 void FilterParamsList::changedEdit(QString text){
     lastFilter->changeParameters(((QLineEdit*)sender())->property("row").toInt(),
             ((QLineEdit*)sender())->property("column").toInt(),ui.tableWidget);
     
 }
+//------------------------------------------------------------------------------
+
+/**
+ * Slot, called when user changes value of a parameter in table widget.
+ * Cell with value is QComboBox instance.
+ * @param idx
+ */
 
 void FilterParamsList::changedBox(int idx){
     lastFilter->changeParameters(1,1,ui.tableWidget);
 }
+//------------------------------------------------------------------------------
+
+/**
+ * Slot, changes value of parameter in a filter.
+ * Called when user changed value in a table.
+ * @param r - row of a changed cell
+ * @param c - coll of a changed cell
+ */
 
 void FilterParamsList::changedCell(int r, int c){
     lastFilter->changeParameters(r,c,ui.tableWidget);
 }
+//------------------------------------------------------------------------------
+
+/**
+ * Slot, changes description string, when table cell was selected.
+ */
 
 void FilterParamsList::changeDescription(int r, int c){
    
@@ -149,6 +205,15 @@ void FilterParamsList::changeDescription(int r, int c){
         }
     }
 }
+//------------------------------------------------------------------------------
+
+/**
+ * Event handler. 
+ * Called when something is changed in a table.
+ * @param object
+ * @param event
+ * @return 
+ */
 
 bool FilterParamsList::eventFilter(QObject* object, QEvent* event)
 {
@@ -166,3 +231,4 @@ bool FilterParamsList::eventFilter(QObject* object, QEvent* event)
     }
     return false;
 }
+//------------------------------------------------------------------------------

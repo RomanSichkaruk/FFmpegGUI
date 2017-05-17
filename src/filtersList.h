@@ -51,20 +51,57 @@ extern "C"{
 #include "libswscale/swscale.h"
     
 }
+
+
 class FiltersList : public QDockWidget {
     Q_OBJECT
 public:
+    /**
+     * Constructor
+     */
     FiltersList();
+    //--------------------------------------------------------------------------
+    
+    /**
+     * Copy constructor
+     */
     FiltersList(const FiltersList& orig);
+    //--------------------------------------------------------------------------
+    
+    /**
+     * Destructor
+     */
     virtual ~FiltersList();
+    //--------------------------------------------------------------------------
 public slots:
+    /**
+     * Slot, called when user edites field with searched filters.
+     * @param text text written by user
+     */
     void changedEdit(QString text);
+    //--------------------------------------------------------------------------
+    
+    /**
+     * Slot, called when user changes widget location.
+     * @param area
+     */
     void changedLocation(Qt::DockWidgetArea area);
+    //--------------------------------------------------------------------------
+    
+    /**
+     * Slot, called when filters need to be aligned in a row.
+     */
     void toHorizontalChange();
+    //--------------------------------------------------------------------------
+    
+    /**
+     * Slot, called when filters need to be aligned in a col.
+     */
     void toVerticalChange();
+    //--------------------------------------------------------------------------
 private:
-    bool vert;
-    Ui::DockWidgetL ui;
+    bool vert;          // Flag, says if filters are aligned vertically.
+    Ui::DockWidgetL ui; // Graphical layout of this widget.
 };
 
 #endif /* FILTERSWIDGET_H */

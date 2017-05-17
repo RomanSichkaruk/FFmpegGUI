@@ -55,20 +55,89 @@ class Pad;
 
 class Connectivity {
 public:
+    /**
+     *  Constructors
+     */
     Connectivity();
     Connectivity(const Connectivity& orig);
+    //--------------------------------------------------------------------------
+    
+    /**
+     * This function adds new wire to list of all wires.
+     * @param w is a wire to be added
+     */
     void addWire(Wire * w);
+    //--------------------------------------------------------------------------
+    
+    /** 
+     * This funcction updaptes location of a wire on scene.
+     * Wire to be updated is a wire that has one of pads corresponding 
+     * to pad sent as an argument.
+     * @param p that is connected by wire
+     */
     void updateWires(Pad * p);
+    //--------------------------------------------------------------------------
+    
+    /**
+     * Returns list of wires holden by this connectivity.
+     * @return 
+     */
     inline QList<Wire*> getWires(){return wires;}
+    //--------------------------------------------------------------------------
+    
+    /**
+     * Computes string for ffplay.
+     * @return 
+     */
     QString computeString();
+    //--------------------------------------------------------------------------
+    
+    /**
+     *  This function returns path to input file.
+     */
     QString inputPath();
+    //--------------------------------------------------------------------------
+    
+    /**
+     *  This function returns pad of an input buffer.
+     */
     Pad * getInput();
+    //--------------------------------------------------------------------------
+    
+    /**
+     * Deletes wire from a list of all wires.
+     * @param w wire to be deleted.
+     */
     void removeWire(Wire * w);
+    //--------------------------------------------------------------------------
+    
+    /**
+     * Parses one part - sequension of filters that dont have 
+     * spliting or overlaying filters (or ends with them)
+     * and are connected one by one.
+     * @param pad - first input pad of a sequension.
+     * @param cmd - string with command to be appended
+     * @return list of all output pads
+     */
     QList <Pad *> parseOnePart(Pad* pad, QString * cmd);
+    //--------------------------------------------------------------------------
+    
+    /**
+     * Removes all wires, that have of of pads sent as arguments in
+     * their connected pads. Called on filter deletion.
+     * @param p1 - first (input) pad of a filter.
+     * @param p2 - second (output) pad of a filter.
+     */
     void removeWires(Pad * p1, Pad * p2);
+    //--------------------------------------------------------------------------
+    
+    /**
+     *  Destructor
+     */
     virtual ~Connectivity();
+    //--------------------------------------------------------------------------
 private:
-    QList<Wire*> wires;
+    QList<Wire*> wires; // List of actual wires
 };
 
 #endif /* CONNECTIVITY_H */

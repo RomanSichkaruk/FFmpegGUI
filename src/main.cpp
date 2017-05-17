@@ -26,12 +26,6 @@
 #include "player.h"
 #include "mainwindow.h"
 
-void printHelp(){
-    std::cout << "Usage: \n";
-    std::cout << QApplication::applicationName().toStdString() << " -i [input] -vf 'filter string' [output]\n" ;
-    std::cout << "If output is not specified, video is played.\n" ;
-    exit(0);
-}
 
 int main(int argc, char *argv[]) {
     // initialize resources, if needed
@@ -39,20 +33,8 @@ int main(int argc, char *argv[]) {
 
     QApplication app(argc, argv);
     
-    if(argc > 1){
-        if(argc == 5){
-            
-        }
-        else{
-            printHelp();
-        }
-    }
-    else{
-        MainWindow w;
-        w.show();
-        return app.exec();
-    }
-    // create and show your widgets here
-
     
+    MainWindow w;
+    w.show();
+    return app.exec();
 }

@@ -29,6 +29,10 @@
 #include <QGraphicsScene>
 #include <QGraphicsSceneMouseEvent>
 
+/**
+ * Constructors and destructor.
+ * @param r - pad bounding rect
+ */
 
 Pad::Pad(const QRectF &r) {
     this->setFlag(QGraphicsItem::ItemSendsGeometryChanges);
@@ -43,20 +47,44 @@ Pad::Pad(const Pad& orig) {
 
 Pad::~Pad() {
 }
+//------------------------------------------------------------------------------
+
+/**
+ * Sets pads owner filter.
+ * @param f - filter with this pad
+ */
 
 void Pad::setParent(Filter* f){
     this->setParentItem(f);
     parent = f;
 }
+//------------------------------------------------------------------------------
+
+/**
+ * Mouse pressed event handler.
+ * @param event
+ */
 
 void Pad::mousePressEvent(QGraphicsSceneMouseEvent *event){
     selected = !selected;
     this->scene()->update();
     QGraphicsItem::mousePressEvent(event);
 }
+//------------------------------------------------------------------------------
+
+/**
+ * Return pads bounding rect.
+ * @return 
+ */
+
 QRectF Pad::boundingRect() const{
     return padRect;
 }
+//------------------------------------------------------------------------------
+
+/**
+ * Handler of changed activity. Called on pads selection.
+ */
 
 QVariant Pad::itemChange(GraphicsItemChange change, const QVariant & value){
     if(change == ItemPositionChange){
@@ -66,6 +94,11 @@ QVariant Pad::itemChange(GraphicsItemChange change, const QVariant & value){
     }
     return QGraphicsItem::itemChange(change, value);
 }
+//------------------------------------------------------------------------------
+
+/**
+ * Paitner function. Paints pad on a scene.
+ */
 
 void Pad::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
@@ -83,7 +116,15 @@ void Pad::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidg
                                                     boundingRect().width()/2-2);
     }
 }
+//------------------------------------------------------------------------------
+
+/**
+ * Returns name of a filter that owns this pad.
+ * @return 
+ */
 
 QString Pad::getParentName() const {
     return this->getParent()->getName();
 }
+//------------------------------------------------------------------------------
+

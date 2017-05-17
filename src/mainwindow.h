@@ -86,93 +86,270 @@ class MainWindow : public QMainWindow{
     Q_OBJECT
     
 protected:
+    /**
+     * Mouse pressed event handler.
+     * @param event
+     */
     void mousePressEvent(QMouseEvent *event);
+     //-------------------------------------------------------------------------
+    
+    /**
+     * Window resized event handler.
+     */
     void resizeEvent(QResizeEvent* event);
+     //-------------------------------------------------------------------------
     
 public:
+    /**
+     * Construrs and destructor
+     */
     MainWindow();
     MainWindow(const MainWindow& orig);
     virtual ~MainWindow();
-    
+    //--------------------------------------------------------------------------
 
 private:
-    FiltersList *filterBar;
-    Pipeline * actualPipeline;
-    QList<Player*> players;
+    FiltersList *filterBar;     // List of all filters
+    Pipeline * actualPipeline;  // Current pipeline
+    QList<Player*> players;     // List of all players
+    
+    /**
+     * Returns name of an ouput file.
+     * @return 
+     */
     QString outputName();
+    //-------------------------------------------------------------------------
+    
+    /**
+     * Returns used ecnoder.
+     * @return 
+     */
     QString getEncoder();
+    //-------------------------------------------------------------------------
+    
+    /**
+     *  Starts saving of a pipeline to TXT file
+     */
     void parseTxt(const QString &filename);
+    //-------------------------------------------------------------------------
+    
+    /**
+     * Setups QActions in a toolbar.
+     */
     void createActions();
+    //-------------------------------------------------------------------------
+    
+    /**
+     * Creates scene and initializes its size.
+     */
     void prepareScene();
+    //-------------------------------------------------------------------------
+    
+    /**
+     * Initializes help labels.
+     */
     void initializeHelp();
+    //-------------------------------------------------------------------------
+    
+    /**
+     * Creates new QAction
+     * @param info  - description of an action
+     * @param icon  - icon of an action
+     * @param key   - shortcut for an action
+     * @return reference to action     
+     */
     QAction * createNewAction(const QString &info, const QString &icon, Qt::Key key);
+    //-------------------------------------------------------------------------
+    
+    /**
+     * Returns closest pad to pad sent as an argument
+     */
     Pad * closestPad(Pad * p);
+    //--------------------------------------------------------------------------
+    
+    /**
+     * Returns output pad of an input filter
+     * @return 
+     */
     Pad * inputPad();
-   
+    //--------------------------------------------------------------------------
+       
+    QLabel *unicorn;                // Label with helper (penguin).
+    QLabel * helpText;              // Label with helper text (buble).
+    Scene * scene;                  // Scene.
+    View * view;                    // View on scene.
+    InspectionWidget * insWidget;   // Inspection dock widget.
+    Connectivity *c;                // Connectivity, holds wires.
+    QToolBar *fileToolBar;          // Toolbar for quick actions.
+    QAction *newAct;                // Quick action to load graph from file.
+    QAction *saveXml;               // Quick action to save graph to XML file. 
+    QAction *saveTxt;               // Quick action to save graph to TXT file. 
+    QAction *wire;                  // Quick action to connect two pads. 
+    QAction *save;                  // Quick action to save processed video. 
+    QAction *curs;                  // Quick action to change cursor to arrow. 
+    QAction *clear;                 // Quick action to clear canvas (scene). 
+    QAction *remove;                // Quick action to remove graphics element. 
+    QAction *hand;                  // Quick action to change cursor to hand. 
+    QAction *play;                  // Quick action to play preview. 
+    QAction *text;                  // Quick action to show pipeline text representation. 
+    QAction *help;                  // Quick action to show help on selected item. 
+    QAction *automatic;             // Quick action to automatically connect pads. 
+    QAction *exitAll;               // Quick action to end application. 
+    QAction *showFList;             // Quick action to show/hide filters. 
+    QAction *showPList;             // Quick action to show/hide parameters. 
+    QMenu *fileMenu;                // Main menu. 
+    FilterParamsList * filterList;  // Widget with parameters table. 
+    QPushButton * shower;           // Button on which preview is displayed. 
     
-    QLabel *unicorn;
-    QLabel * helpText;
-    Scene * scene;
-    View * view;
-    InspectionWidget * insWidget;
-    Connectivity *c;
-    
-    
-    QToolBar *fileToolBar;
-    
-    QAction *newAct;
-    QAction *saveXml;
-    QAction *saveTxt;
-    QAction *stopPlay;
-    QAction *wire;
-    QAction *save;
-    QAction *curs;
-    QAction *clear;
-    QAction *remove;
-    QAction *hand;
-    QAction *filter;
-    QAction *play;
-    QAction *text;
-    QAction *help;
-    QAction *automatic;
-    QAction *exitAll;
-    QAction *showFList;
-    QAction *inspection;
-    QAction *showPList;
-    
-    QMenu *fileMenu;
-    FilterParamsList * filterList;
-    QPushButton * shower;
 public slots:
+    /**
+     * Called when size of frame is received.
+     * Initializes preview button size.
+     * @param size
+     */
     void receivedSize(const QSize & size);
+    //--------------------------------------------------------------------------
+    
+    /**
+     * Called when imageis received.
+     * Initializes preview button icon.
+     * @param size
+     */
     void receivedImage(const QImage & im);
+    //--------------------------------------------------------------------------
+    
+    /**
+     *  Connects two pads
+     */
     void connectWire();
+    //--------------------------------------------------------------------------
+    
+    /**
+     *  Initializes widget with parameters table.
+     */
     void createFilterBar();
+    //--------------------------------------------------------------------------
+    
+    /**
+     * Loads graph from file.
+     */
     void addInput();
+    //--------------------------------------------------------------------------
+    
+    /**
+     * Clears canvas (scene).
+     */
     void clearAll();
+    //--------------------------------------------------------------------------
+    
+    /**
+     *  Plays preview.
+     */
     void playVideo();
+    //--------------------------------------------------------------------------
+    
+    /**
+     * Removes dock widget when previewing finished.
+     * @param p
+     */
     void removeDock(Player * p);
+    //--------------------------------------------------------------------------
+    
+    /**
+     * Updates dynamic inspector data.
+     */
     void updateInspector();
+    //--------------------------------------------------------------------------
+    
+    /**
+     *  Continues playing after stop.
+     */
     void justContinue();
+    //--------------------------------------------------------------------------
+    
+    /**
+     * Saves pipeline to XML file.
+     */
     void saveXML();
+    //--------------------------------------------------------------------------
+    
+    /**
+     * Saves pipeline to TXT file.
+     */
     void saveTXT();
+    //--------------------------------------------------------------------------
+    
+    /**
+     * Signalises that hand cursor was toogled.
+     */
     void handTogled();
+    //--------------------------------------------------------------------------
+    
+    /**
+     * Signalises that arrow cursor was toogled.
+     */
     void cursTogled();
+    //--------------------------------------------------------------------------
+    
+    /**
+     * Autoconnects filters in pipeline
+     */
     void autoConnect();
+    //--------------------------------------------------------------------------
+    
+    /**
+     * Saves processed video.
+     */
     void saveVideo();
+    //--------------------------------------------------------------------------
+    
+    /**
+     * Shows/hides filters.
+     */
     void showF();
+    //--------------------------------------------------------------------------
+    
+    /**
+     * Shows/hides parameters.
+     */
     void showP();
+    //--------------------------------------------------------------------------
+    
+    /**
+     * Exits from application
+     */
     void exitP();
+    //--------------------------------------------------------------------------
+    
+    /**
+     *  Removes item from canvas (scene).
+     */
     void removeItem();
+    //--------------------------------------------------------------------------
+    
+    /**
+     * Shows string with text representation
+     * of a pipeline.
+     */
     void showText();
+    //--------------------------------------------------------------------------
+    
+    /**
+     * Deprecated
+     */
     void runInspection();
+    //--------------------------------------------------------------------------
+    
+    /**
+     * Shows help for selected item.
+     */
     void showHelp();
+    //--------------------------------------------------------------------------
     
 signals:
-    void doFinish();
-    void insUpdated();
-    void continuePlaying();
-    
+    void doFinish();        // Signalises that previewing finished
+    void insUpdated();      // Signalises that inspection data can be updated
+    void continuePlaying(); // Signalises that inspection was updated
     
 };
 

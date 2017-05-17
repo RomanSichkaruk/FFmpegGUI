@@ -24,6 +24,10 @@
 #include "pipelineSaver.h"
 #include "pipelineParser.h"
 
+/**
+ *  Constructors and destructor
+ */
+
 PipelineSaver::PipelineSaver(Pipeline *p,QString out, QString e) : pipe(p), 
                                                 ofilename(out), encoder_name(e) {
 }
@@ -33,13 +37,21 @@ PipelineSaver::PipelineSaver(const PipelineSaver& orig) {
 
 PipelineSaver::~PipelineSaver() {
 }
+//------------------------------------------------------------------------------
+
+/**
+ *  Opens output video container.
+ *  Creates its context.
+ *  Copies audio and video stream to it.
+ *  Setups encoders for each stream.
+ */
 
 int PipelineSaver::open_output_file()
 {
     AVStream *out_stream;
     AVStream *in_stream;
     AVCodecContext *dec_ctx,* enc_ctx;
-    
+    av_log_set_level(AV_LOG_DEBUG);
     AVCodec *encoder;
     int ret;
     unsigned int i;
@@ -114,7 +126,7 @@ int PipelineSaver::open_output_file()
             throw std::runtime_error("Elementary stream is of unknown type, cannot proceed");
             return AVERROR_INVALIDDATA;
         } else {
-            ret = avcodec_copy_context(out_stream->codec, in_stream->codec);
+            ret = avcodec_copy_context(ofmt_ctx->streams[i]->codec, in_stream->codec);
             if (ret < 0) {
                 throw std::runtime_error("Copying parameters for stream failed");
                 return ret;
@@ -137,6 +149,15 @@ int PipelineSaver::open_output_file()
     }
     return 0;
 }
+//------------------------------------------------------------------------------
+
+/**
+ * Encodes and writes filtered frame to output container
+ * @param filt_frame
+ * @param stream_index
+ * @param got_frame - indicates errors.
+ * @return 
+ */
 
 int PipelineSaver::encode_write_frame(AVFrame *filt_frame, unsigned int stream_index, int *got_frame)
 {
@@ -171,6 +192,14 @@ int PipelineSaver::encode_write_frame(AVFrame *filt_frame, unsigned int stream_i
     ret = av_interleaved_write_frame(ofmt_ctx, &enc_pkt);
     return ret;
 }
+//------------------------------------------------------------------------------
+
+/**
+ * Encodes and writes frame to output container
+ * @param frame
+ * @param stream_index
+ * @return 
+ */
 
 int PipelineSaver::filter_encode_write_frame(AVFrame *frame, unsigned int stream_index)
 {
@@ -178,14 +207,13 @@ int PipelineSaver::filter_encode_write_frame(AVFrame *frame, unsigned int stream
     AVFrame *filt_frame;
     av_log(NULL, AV_LOG_INFO, "Pushing decoded frame to filters\n");
     
-    /* push the decoded frame into the filtergraph */
     ret = av_buffersrc_add_frame_flags(pipe->getBSrc(), frame, 0);
     if (ret < 0) {
         throw std::runtime_error("Failed to copy encoder parameters to output stream5");
         av_log(NULL, AV_LOG_ERROR, "Error while feeding the filtergraph\n");
         return ret;
     }
-    /* pull filtered frames from the filtergraph */
+    
     while (1) {
         filt_frame = av_frame_alloc();
         if (!filt_frame) {
@@ -198,11 +226,6 @@ int PipelineSaver::filter_encode_write_frame(AVFrame *frame, unsigned int stream
                 filt_frame);
         
         if (ret < 0) {
-            /* if no more frames for output - returns AVERROR(EAGAIN)
-             * if flushed and no more frames for output - returns AVERROR_EOF
-             * rewrite retcode to 0 to show it as normal procedure completion
-             */
-            
             if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF)
                 ret = 0;
             
@@ -221,6 +244,13 @@ int PipelineSaver::filter_encode_write_frame(AVFrame *frame, unsigned int stream
     }
     return ret;
 }
+//------------------------------------------------------------------------------
+
+/**
+ * Flushes stream encoder
+ * @param stream_index
+ * @return 
+ */
 
 int PipelineSaver::flush_encoder(unsigned int stream_index)
 {
@@ -239,6 +269,13 @@ int PipelineSaver::flush_encoder(unsigned int stream_index)
     }
     return ret;
 }
+//------------------------------------------------------------------------------
+
+/**
+ * Saves pipeline to TXT file.
+ * @param c         - connectivity with used wires
+ * @param filename  - name of an output file
+ */
 
 void PipelineSaver::saveTxt(Connectivity *c,const QString& filename) {
         QString streamString("-i ");
@@ -253,6 +290,14 @@ void PipelineSaver::saveTxt(Connectivity *c,const QString& filename) {
         stream << streamString;
         file.close();
 }
+//------------------------------------------------------------------------------
+
+/**
+ * Saves pipeline to XML file.
+ * @param scene     - current scene
+ * @param c         - connectivity with used wires
+ * @param filename  - name of an output file
+ */
 
 void PipelineSaver::saveXml(Scene * scene, Connectivity *c,const QString& filename) {
     
@@ -315,6 +360,14 @@ void PipelineSaver::saveXml(Scene * scene, Connectivity *c,const QString& filena
 
     file.close();
 }
+//------------------------------------------------------------------------------
+
+/**
+  * Saves pipeline processed video to file.
+  * Needs to be improved.
+  * Works just with some special formats and coders
+  * @return 
+  */
 
 int PipelineSaver::save()
 {
@@ -414,3 +467,4 @@ end:
     avformat_free_context(ofmt_ctx);
     return ret ? 1 : 0;
 }
+//------------------------------------------------------------------------------

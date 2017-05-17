@@ -59,6 +59,7 @@ Player::Player(Pipeline * p, QPushButton * b) : pipeline(p), btn(b){
 
 Player::~Player() {
     delete btn;
+    delete pipeline;
 }
 //------------------------------------------------------------------------------
 
@@ -133,13 +134,7 @@ void Player::runPlaying(){
                     opened = true;
                 }
                 else if(!btn->isVisible()) break;
-               // else if(!btn->isVisible()) break;
                 emit sendingImage(frameToQImage(filt_frame));
-              //  btn->setIconSize(QSize(btn->width()-15, btn->height()-15));
-               // picture = QIcon (QPixmap::fromImage(frameToQImage(filt_frame)
-                                              //   ).scaledToWidth(btn->width()));
-               // btn->setIcon(picture);
-                
                 av_frame_unref(filt_frame);
                 av_frame_unref(frame);
             }

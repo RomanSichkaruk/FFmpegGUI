@@ -29,11 +29,20 @@
 class InspectionWidget : public QDockWidget {
     Q_OBJECT
 public:
+    /**
+     * Constructors and destructor
+     */
     InspectionWidget();
     virtual ~InspectionWidget();
+    //--------------------------------------------------------------------------
+    
+    /**
+     *  Returns table widget.
+     */
     QTableWidget * getTable();
+    //--------------------------------------------------------------------------
 private:
-    Ui::Inspection widget;
+    Ui::Inspection widget; // Graphical layout of a widget
 };
 
 #endif /* _INSPECTIONWIDGET_H */

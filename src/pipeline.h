@@ -50,6 +50,9 @@ extern "C"{
 class Pipeline : public QObject {
     Q_OBJECT
 public:
+    /** 
+     * Constructors and destructor
+     */
     Pipeline();
     //--------------------------------------------------------------------------
     
@@ -114,25 +117,36 @@ public slots:
     //--------------------------------------------------------------------------
     
 private:
-    QString path;
-    QString filter; 
-    int video_stream;
-    AVFormatContext *   format;
-    AVCodecContext  *   decoder_ctx;
+    QString path;       // Path to input file
+    QString filter;     // Computed text representation of filter graph
+    int video_stream;   // Number of video stream
+    AVFormatContext *   format;     // Input format context
+    AVCodecContext  *   decoder_ctx;// Decoder context
     
-    AVFilterContext *   buffersink_ctx;
-    AVFilterContext *   buffersrc_ctx;
-    AVFilterGraph   *   filter_graph;
-    AVFilterInOut   *   inputs;
-    AVFilterInOut   *   outputs; 
+    AVFilterContext *   buffersink_ctx; // Buffer from which filter graph takes frames
+    AVFilterContext *   buffersrc_ctx;  // Buffer in which filter graph returns frames
+    AVFilterGraph   *   filter_graph;   // Filter graph
+    AVFilterInOut   *   inputs;         // Filter graph inputs
+    AVFilterInOut   *   outputs;        // Filter graph outputs
     
-    
+    /**
+     *  Opens input file.
+     *  Creates and setups format context.
+     *  Initializes decoder.
+     */
     void loadContext();
     //--------------------------------------------------------------------------
     
+    /**
+     * Initializes filter graph depending on filter string.
+     * Connects its outputs and inputs.
+     */
     void initializeFilterGraph();
     //--------------------------------------------------------------------------
     
+    /**
+     * Initialize filter graph inputs and ouputs.
+     */
     void createEndPoints();
     //--------------------------------------------------------------------------
 };

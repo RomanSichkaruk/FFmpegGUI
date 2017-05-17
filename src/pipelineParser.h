@@ -51,28 +51,93 @@ extern "C"{
 
 class PipelineParser {
 public:
+    /**
+     *  Constructors and destructor
+     */
     PipelineParser(Scene * s);
     PipelineParser(Pipeline * p, Scene * s);
     PipelineParser(Pipeline * p, Scene * s, bool aply);
     PipelineParser(const PipelineParser& orig);
-    
-    void parse();
-    void parseTxt(const QString &filename);
-    void parseXml(const QString &filename);
     virtual ~PipelineParser();
-private:
-    bool wasCreated;
-    Pipeline * pipeline;
-    Scene * scene; 
+    //--------------------------------------------------------------------------
     
+    /**
+     * Parses pipeline created in GUI.
+     */
+    void parse();
+    //--------------------------------------------------------------------------
+    
+    /**
+     * Loads pipeline from TXT file.
+     * @param filename
+     */
+    void parseTxt(const QString &filename);
+    //--------------------------------------------------------------------------
+    
+    /**
+     * Loads pipeline from XML file.
+     * @param filename
+     */
+    void parseXml(const QString &filename);
+    //--------------------------------------------------------------------------
+    
+    
+private:
+    bool wasCreated;     // Flag, says if pipeline was given, or read from file.
+    Pipeline * pipeline; // Current pipeline
+    Scene * scene;       // Scene, where graphics items are
+    
+    /**
+     *  Reads WIRE node from XML file.
+     *  Creates corresponding wire on scene.
+     */
     void setupWire(QXmlStreamReader * Rxml);
+    //--------------------------------------------------------------------------
+    
+    /**
+     *  Reads FILTER node from XML file.
+     *  Creates corresponding filter on scene.
+     */
     void setupFilter(Filter * f, QHash<int, QString> * padNames, 
                      QHash<QString, QString> *parameters);
+    //--------------------------------------------------------------------------
+    
+    /**
+     * Updates pads indexes.
+     * So new unique index is max index from TXT file + 1
+     * @param str
+     */
     void updateIndexes(const QString & str);
+    //--------------------------------------------------------------------------
+    
+    /**
+     * Creates graphical representation of a pipeline.
+     */
     void aplyOnScene();
+    //--------------------------------------------------------------------------
+    
+    /**
+     * Setups created filter and sets its context.
+     */
     void setFilter(Filter * previous, Pad* pad, AVFilterContext*ctx);
+    //--------------------------------------------------------------------------
+    
+    /**
+     * Create new graphics filter item on scene.
+     * Uses info from AVFilterContext.
+     * @param ctx - all info about filter to be created.
+     * @param pos - position to place filter.
+     */
     void createFilter(AVFilterContext*ctx, QPointF pos);
+    //--------------------------------------------------------------------------
+    
+    /**
+     * Sets filter on scene his filter context from built pipeline.
+     * @param fc
+     */
     void setFiltContext(AVFilterContext * fc);
+    //--------------------------------------------------------------------------
+    
 };
 
 #endif /* PIPELINEPARSER_H */

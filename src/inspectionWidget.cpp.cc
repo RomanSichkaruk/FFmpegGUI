@@ -22,6 +22,10 @@
 ***********************************************************************************/
 #include "inspectionWidget.h"
 
+/**
+ * Constructors and destructor
+ */
+
 InspectionWidget::InspectionWidget() {
     widget.setupUi(this);
     widget.tableWidget->setColumnCount(2);
@@ -33,8 +37,14 @@ InspectionWidget::InspectionWidget() {
     widget.tableWidget->setHorizontalHeaderItem(1, h2);
     this->hide();
 }
+InspectionWidget::~InspectionWidget() {}
+//------------------------------------------------------------------------------
+
+/**
+ *  Returns table widget.
+ */
+
 QTableWidget * InspectionWidget::getTable(){
     return widget.tableWidget;
 }
-InspectionWidget::~InspectionWidget() {
-}
+//------------------------------------------------------------------------------

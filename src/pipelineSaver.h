@@ -47,25 +47,83 @@ extern "C"{
 
 class PipelineSaver {
 public:
+    /**
+     *  Constructors and destructor
+     */
     PipelineSaver();
     PipelineSaver(Pipeline *p,QString out, QString e);
     PipelineSaver(const PipelineSaver& orig);
     virtual ~PipelineSaver();
+    //--------------------------------------------------------------------------
     
+    /**
+     *  Opens output video container.
+     *  Creates its context.
+     *  Copies audio and video stream to it.
+     *  Setups encoders for each stream.
+     */
     int open_output_file();
+    //--------------------------------------------------------------------------
+    
+    /**
+     * Encodes and writes filtered frame to output container
+     * @param filt_frame
+     * @param stream_index
+     * @param got_frame - indicates errors.
+     * @return 
+     */
     int encode_write_frame(AVFrame *filt_frame, unsigned int stream_index, int *got_frame);
-
+    //--------------------------------------------------------------------------
+    
+    /**
+     * Encodes and writes frame to output container
+     * @param frame
+     * @param stream_index
+     * @return 
+     */
     int filter_encode_write_frame(AVFrame *frame, unsigned int stream_index);
+    //--------------------------------------------------------------------------
+    
+    /**
+     * Flushes stream encoder
+     * @param stream_index
+     * @return 
+     */
     int flush_encoder(unsigned int stream_index);
+    //--------------------------------------------------------------------------
+    
+    /**
+     * Saves pipeline processed video to file.
+     * Needs to be improved.
+     * Works just with some special formats and coders
+     * @return 
+     */
     int save();
+    //--------------------------------------------------------------------------
+    
+    /**
+     * Saves pipeline to XML file.
+     * @param scene     - current scene
+     * @param c         - connectivity with used wires
+     * @param filename  - name of an output file
+     */
     void saveXml(Scene * scene, Connectivity *c,const QString& filename);
+    //--------------------------------------------------------------------------
+    
+    /**
+     * Saves pipeline to TXT file.
+     * @param c         - connectivity with used wires
+     * @param filename  - name of an output file
+     */
     void saveTxt(Connectivity *c,const QString& filename);
-    AVCodecContext *encoder_ctx;
-    Pipeline *pipe;
-    QString ofilename;
-    QString encoder_name;
+    //--------------------------------------------------------------------------
+
+    AVCodecContext *encoder_ctx; // output format context
+    Pipeline *pipe;              // pipeline to be saved
+    QString ofilename;           // name of output video file
+    QString encoder_name;        // used video encoder
 private:
-    AVFormatContext *ofmt_ctx;
+    AVFormatContext *ofmt_ctx;   // output format context
 };
 
 #endif /* PIPELINESAVER_H */

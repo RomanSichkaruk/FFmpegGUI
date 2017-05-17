@@ -23,6 +23,10 @@
 
 #include "pipeline.h"
 
+/** 
+ * Constructors and destructor
+ */
+
 Pipeline::Pipeline() {
     format=NULL;
     format=avformat_alloc_context();
@@ -33,10 +37,12 @@ Pipeline::Pipeline(const Pipeline& orig) {
 }
 
 Pipeline::~Pipeline() {
-    avformat_close_input(&format);
     avfilter_inout_free(&inputs);
     avfilter_inout_free(&outputs);
+    
     avfilter_graph_free(&filter_graph);
+    avcodec_close(decoder_ctx);
+    avformat_close_input(&format);
 }
 
 Pipeline::Pipeline(QString p, QString f) : path(p), filter(f){
@@ -47,6 +53,13 @@ Pipeline::Pipeline(QString p, QString f) : path(p), filter(f){
     loadContext();
     initializeFilterGraph();
 }
+//------------------------------------------------------------------------------
+
+/**
+ *  Opens input file.
+ *  Creates and setups format context.
+ *  Initializes decoder.
+ */
 
 void Pipeline::loadContext() {
     AVCodec *dec;
@@ -77,10 +90,20 @@ void Pipeline::loadContext() {
         return ret;
     }
 }
+//------------------------------------------------------------------------------
+
+/**
+ * Slot for safe destruction of pipeline.
+ */
 
 void Pipeline::deleteLater2(){
     this->~Pipeline();
 }
+//------------------------------------------------------------------------------
+
+/**
+ * Initialize filter graph inputs and ouputs.
+ */
 
 void Pipeline::createEndPoints(){
     char args[512];
@@ -115,7 +138,11 @@ void Pipeline::createEndPoints(){
         throw std::runtime_error("Cannot set output pixel format");
     }
 }
-
+//------------------------------------------------------------------------------
+/**
+ * Initializes filter graph depending on filter string.
+ * Connects its outputs and inputs.
+ */
 void Pipeline::initializeFilterGraph(){
     int ret = 0;
     AVFilter *buffersrc  = avfilter_get_by_name("buffer");
@@ -148,3 +175,4 @@ void Pipeline::initializeFilterGraph(){
     if ((ret = avfilter_graph_config(filter_graph, NULL)) < 0)
         throw std::runtime_error("Failed to create graph");
 }
+//------------------------------------------------------------------------------

@@ -26,6 +26,10 @@
 #include "pipelineParser.h"
 #include "pipelineSaver.h"
 
+/**
+ * Construrs and destructor
+ */
+
 MainWindow::MainWindow() {
     
     av_register_all();
@@ -66,9 +70,43 @@ MainWindow::MainWindow() {
 }
 
 MainWindow::MainWindow(const MainWindow& orig) {}
-MainWindow::~MainWindow() {
 
+MainWindow::~MainWindow() {
+    
+    delete unicorn;
+    delete helpText;
+    delete scene;
+    delete view;
+    delete insWidget;
+    delete c;
+    delete fileToolBar;
+    
+    delete newAct;
+    delete saveXml;
+    delete saveTxt;
+    delete wire;
+    delete save;
+    delete curs;
+    delete clear;
+    delete remove;
+    delete hand;
+    delete play;
+    delete text;
+    delete help;
+    delete automatic;
+    delete exitAll;
+    delete showFList;
+    delete showPList;
+    
+    delete fileMenu;
+    delete filterList;
+    delete shower;
 }
+//------------------------------------------------------------------------------
+
+/**
+ * Initializes help labels.
+ */
 
 void MainWindow::initializeHelp(){
     unicorn = new QLabel(this);
@@ -81,6 +119,11 @@ void MainWindow::initializeHelp(){
     helpText->setScaledContents( true ); 
     helpText->setSizePolicy( QSizePolicy::Ignored, QSizePolicy::Ignored );
 }
+//------------------------------------------------------------------------------
+
+/**
+ * Creates scene and initializes its size.
+ */
 
 void MainWindow::prepareScene(){
     c = new Connectivity();
@@ -91,6 +134,11 @@ void MainWindow::prepareScene(){
     this->view->setScene(this->scene);
     setCentralWidget(view);
 }
+//------------------------------------------------------------------------------
+    
+/**
+ * Shows/hides parameters.
+ */
 
 void MainWindow::showP(){
     if(filterList->isVisible()){
@@ -103,6 +151,12 @@ void MainWindow::showP(){
     }
     
 }
+//------------------------------------------------------------------------------
+
+/**
+ * Shows/hides filters.
+ */
+
 void MainWindow::showF(){
     if(filterBar->isVisible()){
         filterBar->hide();
@@ -113,6 +167,12 @@ void MainWindow::showF(){
         showFList->setIcon(QIcon(":/checked.png"));
     }
 }
+//------------------------------------------------------------------------------
+
+/**
+ * Returns name of an ouput file.
+ * @return 
+ */
 
 QString MainWindow::outputName(){
     for(auto f : scene->filters)
@@ -121,6 +181,11 @@ QString MainWindow::outputName(){
     
     return QString();
 }
+//------------------------------------------------------------------------------
+
+/**
+ * Exits from application
+ */
 
 void MainWindow::exitP(){
     QMessageBox::StandardButton reply;
@@ -129,6 +194,11 @@ void MainWindow::exitP(){
     if (reply == QMessageBox::Yes) 
       QApplication::quit();
 }
+//------------------------------------------------------------------------------
+
+/**
+ * Setups QActions in a toolbar.
+ */
 
 void MainWindow::createActions()
 {
@@ -140,6 +210,12 @@ void MainWindow::createActions()
     save = createNewAction("Save video.", ":/save.png", Qt::Key_S);
     connect(save, SIGNAL(triggered()), this, SLOT(saveVideo()));
     
+    saveXml = createNewAction("Save graph to XML.", ":/xml.png", Qt::Key_X);
+    connect(saveXml, SIGNAL(triggered()), this, SLOT(saveXML()));
+    
+    saveTxt = createNewAction("Save graph to txt file.", ":/savetext.png", Qt::Key_L);
+    connect(saveTxt, SIGNAL(triggered()), this, SLOT(saveTXT()));
+    
     remove = createNewAction("Delete element.",":/remove.png", Qt::Key_Delete);
     connect(remove, SIGNAL(triggered()), this, SLOT(removeItem()));
     
@@ -149,8 +225,8 @@ void MainWindow::createActions()
     wire = createNewAction("Create a connection between two pads.", ":/wire.png", Qt::Key_W);
     connect(wire, SIGNAL(triggered()), this, SLOT(connectWire()));
     
-    play = createNewAction("Play preview.", ":/play.png", Qt::Key_P);
-    connect(play, SIGNAL(triggered()), this, SLOT(playVideo()));
+    automatic = createNewAction("Automaticly connect filters.", ":/automatic.png", Qt::Key_A);
+    connect(automatic, SIGNAL(triggered()), this, SLOT(autoConnect()));
     
     hand = createNewAction("Change cursor to hand.", ":/hand.png", Qt::Key_Q);
     connect(hand, SIGNAL(triggered()), this, SLOT(handTogled()));
@@ -158,8 +234,8 @@ void MainWindow::createActions()
     curs = createNewAction("Change cursor to arrow.", ":/cursor.png", Qt::Key_G);
     connect(curs, SIGNAL(triggered()), this, SLOT(cursTogled()));
     
-    automatic = createNewAction("Automaticly connect filters.", ":/automatic.png", Qt::Key_A);
-    connect(automatic, SIGNAL(triggered()), this, SLOT(autoConnect()));
+    play = createNewAction("Play preview.", ":/play.png", Qt::Key_P);
+    connect(play, SIGNAL(triggered()), this, SLOT(playVideo()));
     
     text = createNewAction("Show current graph string representation.",":/text.png", Qt::Key_T);
     connect(text, SIGNAL(triggered()), this, SLOT(showText()));
@@ -167,11 +243,6 @@ void MainWindow::createActions()
     help = createNewAction("Show help on inspected item.",":/help.png", Qt::Key_H);
     connect(help, SIGNAL(triggered()), this, SLOT(showHelp()));
     
-    saveXml = createNewAction("Save graph to XML.", ":/xml.png", Qt::Key_X);
-    connect(saveXml, SIGNAL(triggered()), this, SLOT(saveXML()));
-    
-    saveTxt = createNewAction("Save graph to txt file.", ":/savetext.png", Qt::Key_L);
-    connect(saveTxt, SIGNAL(triggered()), this, SLOT(saveTXT()));
     
     exitAll = new QAction("Exit program.", this);
     exitAll->setIcon(QIcon(":/exit.png"));
@@ -191,6 +262,15 @@ void MainWindow::createActions()
     showPList->setStatusTip(tr("&Show/hide parameters list."));
     connect(showPList, SIGNAL(triggered()), this, SLOT(showP()));
 }
+//------------------------------------------------------------------------------
+
+/**
+ * Creates new QAction
+ * @param info  - description of an action
+ * @param icon  - icon of an action
+ * @param key   - shortcut for an action
+ * @return reference to action     
+ */
 
 QAction * MainWindow::createNewAction(const QString &info, const QString &icon, Qt::Key key){
     QAction * tmp = new QAction(info, this);
@@ -200,6 +280,11 @@ QAction * MainWindow::createNewAction(const QString &info, const QString &icon, 
     fileToolBar->addAction(tmp);
     return tmp;
 }
+//------------------------------------------------------------------------------
+
+/**
+ *  Initializes widget with parameters table.
+ */
 
 void MainWindow::createFilterBar()
 {
@@ -231,11 +316,11 @@ void MainWindow::createFilterBar()
         }
     }
 }
+//------------------------------------------------------------------------------
 
 /**
- * 
- * MainWindow Events
- * 
+ * Mouse pressed event handler.
+ * @param event
  */
 
 void MainWindow::mousePressEvent(QMouseEvent *event)
@@ -244,6 +329,11 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
     helpText->setGeometry(this->width()+200, this->height()+200, 200,200);
     QMainWindow::mousePressEvent(event);
 }
+//------------------------------------------------------------------------------
+
+/**
+ * Window resized event handler.
+ */
 
 void MainWindow::resizeEvent(QResizeEvent* event)
 {
@@ -252,13 +342,10 @@ void MainWindow::resizeEvent(QResizeEvent* event)
    QMainWindow::resizeEvent(event);
    // Your code here.
 }
-
-//-------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 /**
- *
- * QAction slots
- * 
+ *  Connects two pads
  */
 
 void MainWindow::connectWire(){
@@ -294,6 +381,7 @@ void MainWindow::connectWire(){
         c->updateWires(in);
     }
 }
+//------------------------------------------------------------------------------
 
 void MainWindow::parseTxt(const QString &filename){
     clearAll();
@@ -302,6 +390,11 @@ void MainWindow::parseTxt(const QString &filename){
     view->verticalScrollBar()->setValue(300);
     view->horizontalScrollBar()->setValue(0);
 }
+//------------------------------------------------------------------------------
+    
+/**
+ *  Starts saving of a pipeline to TXT file
+ */
 
 void MainWindow::addInput(){
     QString filename = QFileDialog::getOpenFileName(this,tr("Open xml/txt"),
@@ -313,6 +406,11 @@ void MainWindow::addInput(){
     PipelineParser pp(scene);
     pp.parseXml(filename);
 }
+//------------------------------------------------------------------------------
+
+/**
+ * Updates dynamic inspector data.
+ */
 
 void MainWindow::updateInspector(){
     
@@ -324,16 +422,35 @@ void MainWindow::updateInspector(){
     }
     emit insUpdated();
 }
+//------------------------------------------------------------------------------
+
+/**
+ *  Continues playing after stop.
+ */
+
 void MainWindow::justContinue(){
     for(auto p : players){
         removeDock(p);
     }
     players.clear();
 }
+//------------------------------------------------------------------------------
+
+/**
+ * Removes dock widget when previewing finished.
+ * @param p
+ */
 
 void MainWindow::removeDock(Player * p){
    this->removeDockWidget(p->btn->parentWidget());
 }
+//------------------------------------------------------------------------------
+
+/**
+ * Called when size of frame is received.
+ * Initializes preview button size.
+ * @param size
+ */
 
 void MainWindow::receivedSize(const QSize& size){
     shower->show();
@@ -347,11 +464,23 @@ void MainWindow::receivedSize(const QSize& size){
     shower->setMaximumSize(size.width(),size.height());
     shower->setFlat(true);
 }
+//------------------------------------------------------------------------------
+
+/**
+ * Called when imageis received.
+ * Initializes preview button icon.
+ * @param size
+ */
 
 void MainWindow::receivedImage(const QImage& im){
     shower->setIconSize(QSize(shower->width()-15, shower->height()-15));
     shower->setIcon(QPixmap::fromImage(im).scaledToWidth(shower->width()));
 }
+//------------------------------------------------------------------------------
+
+/**
+ *  Plays preview.
+ */
 
 void MainWindow::playVideo(){
     try{
@@ -364,6 +493,7 @@ void MainWindow::playVideo(){
         if(!players.empty()){ 
             justContinue();
             emit doFinish();
+            
         }
         
         actualPipeline = new Pipeline(c->inputPath(),  c->computeString());
@@ -372,7 +502,7 @@ void MainWindow::playVideo(){
         dockw->setWidget(shower);
         players.push_back(p);
         connect(p, SIGNAL(frameFinishedSig()), this, SLOT(updateInspector()) );
-	connect(this, SIGNAL( insUpdated() ), p ,SLOT(inspectionUpdated()) );
+	    connect(this, SIGNAL( insUpdated() ), p ,SLOT(inspectionUpdated()) );
         connect(p, SIGNAL( sendingSize(const QSize&) ), this ,SLOT(receivedSize(const QSize&)) );
         connect(p, SIGNAL( sendingImage(const QImage&) ), this,SLOT(receivedImage(const QImage&)) );
         
@@ -382,8 +512,8 @@ void MainWindow::playVideo(){
         connect(p, SIGNAL(playFinished()), nthtr, SLOT(quit()));
         
         connect(nthtr, SIGNAL(started()), p, SLOT(runPlaying()) );
+        connect(nthtr, SIGNAL(finished()), actualPipeline, SLOT(deleteLater2()) );
         connect(nthtr, SIGNAL(finished()), nthtr, SLOT(deleteLater()));
-        connect(nthtr,SIGNAL(finished()), actualPipeline, SLOT(deleteLater2()));
         
         nthtr->start();
        
@@ -395,6 +525,11 @@ void MainWindow::playVideo(){
         information.exec();
     }
 }
+//------------------------------------------------------------------------------
+
+/**
+ * Deprecated
+ */
 
 void MainWindow::runInspection(){
     try{
@@ -407,6 +542,12 @@ void MainWindow::runInspection(){
         information.exec();
     }
 }
+//------------------------------------------------------------------------------
+
+/**
+  * Returns used ecnoder.
+  * @return 
+  */
 
 QString MainWindow::getEncoder(){
     for(auto f : scene->filters){
@@ -415,6 +556,12 @@ QString MainWindow::getEncoder(){
     }
     return QString("none");
 }
+//------------------------------------------------------------------------------
+
+/**
+ * Shows string with text representation
+ * of a pipeline.
+ */
 
 void MainWindow::showText(){
     try{
@@ -430,6 +577,11 @@ void MainWindow::showText(){
         information.exec();
     }
 }
+//------------------------------------------------------------------------------
+
+/**
+ * Clears canvas (scene).
+ */
 
 void MainWindow::clearAll(){
     for(auto f : scene->filters){
@@ -443,6 +595,11 @@ void MainWindow::clearAll(){
     }
     scene->update();
 }
+//------------------------------------------------------------------------------
+    
+/**
+ * Shows help for selected item.
+ */
 
 void MainWindow::showHelp(){
     
@@ -481,18 +638,33 @@ void MainWindow::showHelp(){
     helpText->show();
     helpText->raise();
 }
+//------------------------------------------------------------------------------
+
+/**
+ * Signalises that arrow cursor was toogled.
+ */
 
 void MainWindow::cursTogled(){
     curs->setIcon(QIcon(":/cursorT.png"));
     hand->setIcon(QIcon(":/hand.png"));
     this->view->setDragMode(QGraphicsView::RubberBandDrag);
 }
+//------------------------------------------------------------------------------
+
+/**
+  * Signalises that hand cursor was toogled.
+  */
 
 void MainWindow::handTogled(){
     curs->setIcon(QIcon(":/cursor.png"));
     hand->setIcon(QIcon(":/handT.png"));
     this->view->setDragMode(QGraphicsView::ScrollHandDrag);
 }
+//------------------------------------------------------------------------------
+
+/**
+ * Autoconnects filters in pipeline
+ */
 
 void MainWindow::autoConnect(){
     try{
@@ -539,12 +711,18 @@ void MainWindow::autoConnect(){
         information.exec();
     }
 }
+//------------------------------------------------------------------------------
+
+/**
+ * Saves processed video.
+ */
 
 void MainWindow::saveVideo(){
    try{
         actualPipeline = new Pipeline(c->inputPath(),  c->computeString());
         PipelineSaver s(actualPipeline, outputName(), getEncoder());   
         s.save();
+        delete actualPipeline;
     }
     catch(std::exception &e){
         QMessageBox information;
@@ -553,6 +731,11 @@ void MainWindow::saveVideo(){
         information.exec();
     }
 }
+//------------------------------------------------------------------------------
+
+/**
+ * Saves pipeline to TXT file.
+ */
 
 void MainWindow::saveTXT(){
     QString filename = QFileDialog::getSaveFileName(this,
@@ -574,6 +757,12 @@ void MainWindow::saveTXT(){
     
     
 }
+//------------------------------------------------------------------------------
+
+/**
+ * Saves pipeline to XML file.
+ */
+
 void MainWindow::saveXML(){
     
     QString filename = QFileDialog::getSaveFileName(this,
@@ -584,8 +773,11 @@ void MainWindow::saveXML(){
     s.saveXml(scene, c, filename);
     
 }
+//------------------------------------------------------------------------------
 
-
+/**
+ *  Removes item from canvas (scene).
+ */
 
 void MainWindow::removeItem(){
     for(auto w : c->getWires()){
@@ -609,8 +801,12 @@ void MainWindow::removeItem(){
     }
     scene->update();
 }
+//------------------------------------------------------------------------------
 
-//-------------------------------------------------------------------------
+/**
+ * Returns closest pad to pad sent as an argument
+ */
+
 Pad * MainWindow::closestPad(Pad * p){
     Pad * pad=NULL;
     double length=1000000.0;
@@ -643,6 +839,12 @@ Pad * MainWindow::closestPad(Pad * p){
     }   
     return pad;
 }
+//------------------------------------------------------------------------------
+
+/**
+ * Returns output pad of an input filter
+ * @return 
+ */
 
 Pad * MainWindow::inputPad(){
     Pad * pad=NULL;
@@ -653,3 +855,4 @@ Pad * MainWindow::inputPad(){
         throw std::runtime_error("No input filter.");
     return pad;
 }
+//------------------------------------------------------------------------------

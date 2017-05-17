@@ -58,23 +58,84 @@ class FilterParamsList : public QDockWidget {
     Q_OBJECT
     
 public:
+    /**
+     * Constructors and destructor
+     */
     FilterParamsList();
     FilterParamsList(const FilterParamsList& orig);
-    void initializeWidget(Filter* f);
     virtual ~FilterParamsList();
+    //--------------------------------------------------------------------------
     
+    /**
+     * This function takes filter parameters and creates 
+     * corresponding cells in table widget. 
+     * @param f filter which parameters are represented
+     */
+    void initializeWidget(Filter* f);
+    //--------------------------------------------------------------------------
 public slots:
+    /**
+     * Slot, called when user changes value of a parameter in table widget.
+     * Cell with value is QLineEdit instance.
+     * @param text
+     */
     void changedEdit(QString text);
+    //--------------------------------------------------------------------------
+    /**
+     * Slot, changes value of parameter in a filter.
+     * Called when user changed value in a table.
+     * @param r - row of a changed cell
+     * @param c - coll of a changed cell
+     */
     void changedCell(int r, int c); 
+    //--------------------------------------------------------------------------
+    
+    /**
+     * Slot, changes description string, when table cell was selected.
+     */
     void changeDescription(int r, int c); 
+    //--------------------------------------------------------------------------
+    /**
+     * Slot, called when user changes value of a parameter in table widget.
+     * Cell with value is QComboBox instance.
+     * @param idx
+     */
     void changedBox(int idx);
+    //--------------------------------------------------------------------------
     
 private:
+    /**
+     *  Creates QComboBox object and places it 
+     *  as a cell widget.
+     *  @param k - filter parameter of a cell
+     *  @param r - row to place combo box
+     *  @param c - col to place combo box
+     */
     void createComboBox(FilterParameter * k, int r,int c);
+    //--------------------------------------------------------------------------
+    
+    /**
+     *  Creates QLineEdit object and places it 
+     *  as a cell widget.
+     *  @param k - filter parameter of a cell
+     *  @param r - row to place line edit
+     *  @param c - col to place line edit
+     */
     void createLineEdit(FilterParameter * k, int r,int c);
+    //--------------------------------------------------------------------------
+    
+    /**
+     * Event handler. 
+     * Called when something is changed in a table.
+     * @param object
+     * @param event
+     * @return 
+     */
     bool eventFilter(QObject* object, QEvent* event);
-    Filter * lastFilter;
-    Ui::DockWidget ui;
+    //--------------------------------------------------------------------------
+    
+    Filter * lastFilter; // Last filter which parameters where represented
+    Ui::DockWidget ui;   // Graphical layout of a widget
 };
 
 #endif /* FILTERSWIDGET_H */

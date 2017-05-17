@@ -23,8 +23,13 @@
 
 #include "pipelineParser.h"
 
-PipelineParser::PipelineParser(Scene * s) : scene(s){
-    
+/**
+ *  Constructors and destructor
+ */
+
+PipelineParser::PipelineParser(Scene * s) {
+    scene=s;
+    wasCreated=false;
 }
 PipelineParser::PipelineParser(Pipeline * p, Scene * s) : pipeline(p), scene(s) {
     
@@ -40,12 +45,19 @@ PipelineParser::PipelineParser(Pipeline * p, Scene * s, bool aply) : pipeline(p)
 }
 PipelineParser::PipelineParser(const PipelineParser& orig) {
 }
+//------------------------------------------------------------------------------
 
 PipelineParser::~PipelineParser() {
     if(pipeline && wasCreated){
         delete pipeline;
     }
 }
+//------------------------------------------------------------------------------
+
+/**
+ * Loads pipeline from TXT file.
+ * @param filename
+ */
 
 void PipelineParser::parseTxt(const QString& filename){
     
@@ -73,6 +85,12 @@ void PipelineParser::parseTxt(const QString& filename){
     file.close();
     
 }
+//------------------------------------------------------------------------------
+
+/**
+ * Loads pipeline from XML file.
+ * @param filename
+ */
 
 void PipelineParser::parseXml(const QString& filename){
    
@@ -137,6 +155,12 @@ void PipelineParser::parseXml(const QString& filename){
         }
 	file.close();
 }
+//------------------------------------------------------------------------------
+
+/**
+ *  Reads WIRE node from XML file.
+ *  Creates corresponding wire on scene.
+ */
 
 void PipelineParser::setupWire(QXmlStreamReader * Rxml){
     
@@ -169,6 +193,12 @@ void PipelineParser::setupWire(QXmlStreamReader * Rxml){
     w->setConnection(in,out, scene->getConnectivity());
     scene->getConnectivity()->updateWires(in);
 }
+//------------------------------------------------------------------------------
+    
+/**
+ *  Reads FILTER node from XML file.
+ *  Creates corresponding filter on scene.
+ */
 
 void PipelineParser::setupFilter(Filter * f, QHash<int, QString> * padNames,
                                            QHash<QString, QString> *parameters){
@@ -198,6 +228,13 @@ void PipelineParser::setupFilter(Filter * f, QHash<int, QString> * padNames,
     }
     parameters->clear();                
 }
+//------------------------------------------------------------------------------
+
+/**
+ * Updates pads indexes.
+ * So new unique index is max index from TXT file + 1
+ * @param str
+ */
 
 void PipelineParser::updateIndexes(const QString & str){
     bool read=false;
@@ -224,6 +261,11 @@ void PipelineParser::updateIndexes(const QString & str){
         }
     }
 }
+//------------------------------------------------------------------------------
+
+/**
+ * Creates graphical representation of a pipeline.
+ */
 
 void PipelineParser::aplyOnScene(){
     for(int i = 0; i < pipeline->getGraph()->nb_filters; i++){
@@ -232,6 +274,11 @@ void PipelineParser::aplyOnScene(){
         }
     }
 }
+//------------------------------------------------------------------------------
+
+/**
+ * Setups created filter and sets its context.
+ */
 
 void PipelineParser::setFilter(Filter * previous, Pad* pad, AVFilterContext*ctx){
 
@@ -282,6 +329,11 @@ void PipelineParser::setFilter(Filter * previous, Pad* pad, AVFilterContext*ctx)
         }
     }
 }
+//------------------------------------------------------------------------------
+
+/**
+ * Parses pipeline created in GUI.
+ */
 
 void PipelineParser::parse(){
     QPointF pos(0,300);
@@ -327,6 +379,14 @@ void PipelineParser::parse(){
         }
     }
 }
+//------------------------------------------------------------------------------
+
+/**
+ * Create new graphics filter item on scene.
+ * Uses info from AVFilterContext.
+ * @param ctx - all info about filter to be created.
+ * @param pos - position to place filter.
+ */
 
 void PipelineParser::createFilter(AVFilterContext*ctx, QPointF pos){
     
@@ -369,6 +429,12 @@ void PipelineParser::createFilter(AVFilterContext*ctx, QPointF pos){
            createFilter(next, pos+QPointF(220, i*70));
     }
 }
+//------------------------------------------------------------------------------
+
+/**
+ * Sets filter on scene his filter context from built pipeline.
+ * @param fc
+ */
 
 void PipelineParser::setFiltContext(AVFilterContext * fc){
     
@@ -397,3 +463,4 @@ void PipelineParser::setFiltContext(AVFilterContext * fc){
         }
     }
 }
+//------------------------------------------------------------------------------

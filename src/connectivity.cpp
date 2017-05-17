@@ -28,19 +28,38 @@
 #include "filter.h"
 #include <QDebug>
 
+/**
+ *  Constructors
+ */
 
-Connectivity::Connectivity() {
-}
+Connectivity::Connectivity() {}
 
-Connectivity::Connectivity(const Connectivity& orig) {
-}
+Connectivity::Connectivity(const Connectivity& orig) {}
+//------------------------------------------------------------------------------
 
-Connectivity::~Connectivity() {
-}
+/**
+ *  Destructor
+ */
+
+Connectivity::~Connectivity() {}
+//------------------------------------------------------------------------------
+
+/**
+ * This function adds new wire to list of all wires.
+ * @param w is a wire to be added
+ */
 
 void Connectivity::addWire(Wire * w){
     wires.push_back(w);
 }
+//------------------------------------------------------------------------------
+
+/** 
+ * This funcction updaptes location of a wire on scene.
+ * Wire to be updated is a wire that has one of pads corresponding 
+ * to pad sent as an argument.
+ * @param p that is connected by wire
+ */
 
 void Connectivity::updateWires(Pad * p){
     for(auto w : wires){
@@ -49,6 +68,12 @@ void Connectivity::updateWires(Pad * p){
         }
     }
 }
+//------------------------------------------------------------------------------
+
+/**
+ * Computes string for ffplay.
+ * @return 
+ */
 
 QString Connectivity::computeString(){
     
@@ -77,6 +102,11 @@ QString Connectivity::computeString(){
     if(cmd.endsWith(";")) cmd = cmd.mid(0, cmd.size()-1);
     return cmd;
 }
+//------------------------------------------------------------------------------
+
+/**
+ *  This function returns path to input file.
+ */
 
 QString Connectivity::inputPath(){
     for(auto w : wires){
@@ -86,6 +116,11 @@ QString Connectivity::inputPath(){
     }
     return QString();
 }
+//------------------------------------------------------------------------------
+
+/**
+ *  This function returns pad of an input buffer.
+ */
 
 Pad* Connectivity::getInput(){
     Pad*in=NULL;
@@ -98,6 +133,12 @@ Pad* Connectivity::getInput(){
         throw std::runtime_error("No input file specified.");
     return in;
 }
+//------------------------------------------------------------------------------
+
+/**
+ * Deletes wire from a list of all wires.
+ * @param w wire to be deleted.
+ */
 
 void Connectivity::removeWire(Wire * w){
     for(int i = 0; i < wires.size(); i++){
@@ -109,6 +150,14 @@ void Connectivity::removeWire(Wire * w){
         }
     }
 }
+//------------------------------------------------------------------------------
+
+/**
+ * Removes all wires, that have of of pads sent as arguments in
+ * their connected pads. Called on filter deletion.
+ * @param p1 - first (input) pad of a filter.
+ * @param p2 - second (output) pad of a filter.
+ */
 
 void Connectivity::removeWires(Pad * p1, Pad * p2){
     QList<Wire *> toRemove;
@@ -129,6 +178,16 @@ void Connectivity::removeWires(Pad * p1, Pad * p2){
     for(auto w : toRemove)
         removeWire(w);
 }
+//------------------------------------------------------------------------------
+
+/**
+ * Parses one part - sequension of filters that dont have 
+ * spliting or overlaying filters (or ends with them)
+ * and are connected one by one.
+ * @param pad - first input pad of a sequension.
+ * @param cmd - string with command to be appended
+ * @return list of all output pads
+ */
 
 QList <Pad *> Connectivity::parseOnePart(Pad* pad, QString * cmd){
     if(!pad) return QList <Pad *>();
@@ -233,3 +292,4 @@ QList <Pad *> Connectivity::parseOnePart(Pad* pad, QString * cmd){
     }
     return QList <Pad *>();
 }
+//------------------------------------------------------------------------------

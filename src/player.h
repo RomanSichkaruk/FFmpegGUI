@@ -87,6 +87,12 @@ public slots:
     //--------------------------------------------------------------------------
     
     /**
+     * This slot is called when there is a need to delete Player.
+     */
+    void deleteIt(){ this->~Player();};
+    //--------------------------------------------------------------------------
+    
+    /**
      * This slot is called when dynamic inspector finished updating and do not
      * uses filter graph anymore.
      */

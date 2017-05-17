@@ -20,6 +20,7 @@
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 ***********************************************************************************/
+
 #include "filter.h"
 #include "filtersWidget.h"
 #include "scene.h"
@@ -33,6 +34,12 @@
 #include <libavutil/opt.h>
 #include <QComboBox>
 
+/**
+ * Converts FFmpeg struct with type of a parameter to 
+ * type from ParameterType enum.
+ * @param t - AVOptionType with parameter type.
+ * @return  type from ParametersType enum.
+ */
 ParametersType avfilToMine(AVOptionType t){
     switch(t){
         case AV_OPT_TYPE_DOUBLE:
@@ -43,6 +50,13 @@ ParametersType avfilToMine(AVOptionType t){
         default:  return ParametersType::STRING; break;
     }    
 }
+//------------------------------------------------------------------------------
+
+/**
+ * Constructor
+ * @param name - is name of a filter
+ * @param pos  - is position on a scene where filter will be placed
+ */
 
 Filter::Filter(QString name, QSize inOut, QPointF pos) {
     selected = false;
@@ -87,11 +101,29 @@ Filter::Filter(QString name, QSize inOut, QPointF pos) {
     ctx=NULL;
     initializeParams();
 }
+//------------------------------------------------------------------------------
 
+/**
+ * Copy constructor
+ * @param orig
+ */
 
 Filter::Filter(const Filter& orig) {}
+//------------------------------------------------------------------------------
+
+/**
+ *  Destructor
+ */
 
 Filter::~Filter() {}
+//------------------------------------------------------------------------------
+
+/**
+ *  Slot which is called when user changes one of a parameters.
+ *  @param r - row in a table widget where user defined value is.
+ *  @param c - col in a table widget where user defined value is.
+ *  @param widg - table widget where user edit parameters.
+ */
 
 void Filter::changeParameters(int r, int c, QTableWidget * widg){
     for(auto f : params){
@@ -103,10 +135,21 @@ void Filter::changeParameters(int r, int c, QTableWidget * widg){
         }
     }
 }
+//------------------------------------------------------------------------------
+    
+/**
+ * Returns bounding rect of a filter.
+ * @return 
+ */
 
 QRectF Filter::boundingRect() const{
     return filterRect;
 }
+//------------------------------------------------------------------------------
+
+/**
+ *  Sets connectivity of a filter.
+ */
 
 void Filter::setConnectivity(Connectivity *c){
     if(this->in != NULL)
@@ -118,6 +161,12 @@ void Filter::setConnectivity(Connectivity *c){
     if(this->out2 != NULL)
         this->out2->setConnectivity(c);
 }
+//------------------------------------------------------------------------------
+    
+/**
+ * Sets AVFilterContext of this filter from a current filter graph.
+ * @param context
+ */
 
 void Filter::setCtx(AVFilterContext * context){
     this->ctx=context;
@@ -143,7 +192,12 @@ void Filter::setCtx(AVFilterContext * context){
     }
     
 }
+//------------------------------------------------------------------------------
 
+/**
+ * Returns next AVOption (filter parameter)
+ * @return 
+ */
 const AVOption *av_opt_next_mine(void *obj, const AVOption *last)
 {
     AVClass *cl = *(AVClass**)obj;
@@ -155,6 +209,12 @@ const AVOption *av_opt_next_mine(void *obj, const AVOption *last)
     
     return NULL;
 }
+//------------------------------------------------------------------------------
+
+/**
+ * Finds filter parameters of AVFilter struct with the same name
+ * as this filter and set its parameters to this filter.
+ */
 
 void Filter::initializeParams(){
     
@@ -191,6 +251,14 @@ void Filter::initializeParams(){
         }
     }
 }
+//------------------------------------------------------------------------------
+
+/**
+ * Called when something is changed with filter. f.e. location, selection.
+ * @param change
+ * @param value
+ * @return 
+ */
 
 QVariant Filter::itemChange(GraphicsItemChange change, const QVariant & value){
     if(change == ItemPositionChange){
@@ -218,6 +286,11 @@ QVariant Filter::itemChange(GraphicsItemChange change, const QVariant & value){
     }
     return QGraphicsItem::itemChange(change, value);
 }
+//------------------------------------------------------------------------------
+ 
+/**
+ * Overrided function for filter painting.
+ */
 
 void Filter::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
@@ -243,6 +316,12 @@ void Filter::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QW
     
     painter->drawText(r, Qt::AlignCenter | Qt::TextWrapAnywhere, name);
 }
+//------------------------------------------------------------------------------
+
+/**
+ * Mouse pressed event handler.
+ * @param event
+ */
 
 void Filter::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
@@ -253,15 +332,27 @@ void Filter::mousePressEvent(QGraphicsSceneMouseEvent *event)
     
     QGraphicsItem::mousePressEvent(event);
 }
+//------------------------------------------------------------------------------
+
+/**
+ * Mouse moved event handler.
+ * @param event
+ */
 
 void Filter::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
     setCursor(Qt::OpenHandCursor);
     QGraphicsItem::mouseMoveEvent(event);
 }
+//------------------------------------------------------------------------------
+
+/**
+ * Mouse released event handler.
+ * @param event
+ */
 
 void Filter::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
     QGraphicsItem::mouseReleaseEvent(event);
-}
-       
+}    
+//------------------------------------------------------------------------------
